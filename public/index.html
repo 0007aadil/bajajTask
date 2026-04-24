@@ -65,6 +65,12 @@
       <div class="card-header">
         <h2>Build Your Tree</h2>
         <p class="card-sub">Click nodes to set parent → child, then press <strong>Add Edge</strong></p>
+        <div class="kbd-hints">
+          <span class="kbd-hint"><kbd>A-Z</kbd> select node</span>
+          <span class="kbd-hint"><kbd>Enter</kbd> add edge</span>
+          <span class="kbd-hint"><kbd>⌘Z</kbd> undo</span>
+          <span class="kbd-hint"><kbd>Esc</kbd> reset</span>
+        </div>
       </div>
 
       <!-- ── Edge Builder ──────────────────────────────── -->
@@ -128,6 +134,15 @@
         </div>
       </div>
 
+      <!-- ── Live Preview ──────────────────────────────── -->
+      <div class="live-preview" id="live-preview" hidden>
+        <div class="live-preview-header">
+          <span class="live-preview-title">⟡ Live Preview</span>
+          <span class="live-preview-stats" id="live-preview-stats"></span>
+        </div>
+        <div class="live-preview-canvas" id="live-preview-canvas"></div>
+      </div>
+
       <!-- ── Presets ───────────────────────────────────── -->
       <div class="presets-row">
         <span class="presets-label">Quick Start:</span>
@@ -150,7 +165,10 @@
       </details>
 
       <div class="input-footer">
-        <button id="example-btn" class="ghost-btn" type="button" hidden>Load Example</button>
+        <div class="input-footer-left">
+          <button id="share-btn" class="ghost-btn" type="button" title="Copy shareable link with your edges">🔗 Share Link</button>
+          <button id="example-btn" class="ghost-btn" type="button" hidden>Load Example</button>
+        </div>
         <button id="submit-btn" class="cta-btn" type="button">
           <span class="btn-text">Process</span>
           <span class="btn-loader" hidden></span>
@@ -167,6 +185,15 @@
     <!-- ── Results ────────────────────────────────────────── -->
     <section id="results" class="results" hidden>
 
+      <!-- Results Toolbar -->
+      <div class="results-toolbar">
+        <h3 class="results-toolbar-title">Results</h3>
+        <div class="results-actions">
+          <button id="copy-json-btn" class="ghost-btn ghost-btn-sm" type="button" title="Copy JSON to clipboard">📋 Copy JSON</button>
+          <button id="download-json-btn" class="ghost-btn ghost-btn-sm" type="button" title="Download JSON file">⬇ Download</button>
+        </div>
+      </div>
+
       <!-- Summary Strip -->
       <div class="summary-strip">
         <div class="ss-item" id="stat-trees">
@@ -180,6 +207,14 @@
         <div class="ss-item" id="stat-largest">
           <span class="ss-num">—</span>
           <span class="ss-label">Deepest Root</span>
+        </div>
+        <div class="ss-item" id="stat-nodes">
+          <span class="ss-num">0</span>
+          <span class="ss-label">Total Nodes</span>
+        </div>
+        <div class="ss-item" id="stat-edges">
+          <span class="ss-num">0</span>
+          <span class="ss-label">Valid Edges</span>
         </div>
       </div>
 

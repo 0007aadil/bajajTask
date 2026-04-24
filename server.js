@@ -11,9 +11,9 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
 // ── Identity (REPLACE with your real details before deploying) ──
-const USER_ID = "yourname_ddmmyyyy";
-const EMAIL_ID = "your.email@college.edu";
-const COLLEGE_ROLL = "YOUR_ROLL_NUMBER";
+const USER_ID = "aadil05012005";
+const EMAIL_ID = "aa5356@srmist.edu.in";
+const COLLEGE_ROLL = "RA2311029010009";
 
 // ── POST /bfhl ───────────────────────────────────────────────
 app.post("/bfhl", (req, res) => {
@@ -266,7 +266,11 @@ function computeDepth(tree) {
   return helper(tree);
 }
 
-// ── Start ────────────────────────────────────────────────────
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
-});
+// ── Start (local dev only — Vercel uses the export) ─────────
+if (process.env.NODE_ENV !== "production") {
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;
