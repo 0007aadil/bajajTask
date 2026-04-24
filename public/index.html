@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BFHL — Hierarchy Processor | SRM</title>
+  <meta name="description" content="SRM Full Stack Engineering Challenge — Process hierarchical node relationships and visualize tree structures." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ── Header ──────────────────────────────────────────── -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-mark">SRM</div>
+        <span class="brand-divider"></span>
+        <span class="brand-text">BFHL Challenge</span>
+      </div>
+      <nav class="header-nav">
+        <span class="nav-endpoint">POST /bfhl</span>
+        <a href="https://github.com" target="_blank" rel="noopener" class="nav-link">GitHub ↗</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="app">
+
+    <!-- ── Hero ────────────────────────────────────────────── -->
+    <section class="hero-section">
+      <div class="hero-content">
+        <h1>Hierarchy<br/>Processor</h1>
+        <p class="hero-desc">
+          Enter node relationships like <code>A→B</code> and instantly
+          visualize the resulting trees, detect cycles, and explore structured insights.
+        </p>
+        <a href="#input-section" class="cta-btn" id="start-btn">Start Now</a>
+      </div>
+      <div class="hero-graphic" aria-hidden="true">
+        <div class="hero-tree">
+          <div class="ht-node ht-root">A</div>
+          <div class="ht-branches">
+            <div class="ht-branch">
+              <div class="ht-node">B</div>
+              <div class="ht-branches">
+                <div class="ht-branch"><div class="ht-node ht-leaf">D</div></div>
+              </div>
+            </div>
+            <div class="ht-branch">
+              <div class="ht-node">C</div>
+              <div class="ht-branches">
+                <div class="ht-branch"><div class="ht-node ht-leaf">E</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Input Card ─────────────────────────────────────── -->
+    <section class="card input-card" id="input-section">
+      <div class="card-header">
+        <h2>Build Your Tree</h2>
+        <p class="card-sub">Click nodes to set parent → child, then press <strong>Add Edge</strong></p>
+      </div>
+
+      <!-- ── Edge Builder ──────────────────────────────── -->
+      <div class="edge-builder">
+        <div class="edge-builder-row">
+          <div class="node-picker" id="parent-picker">
+            <label class="picker-label">Parent</label>
+            <div class="picker-display" id="parent-display">—</div>
+          </div>
+          <span class="edge-arrow">→</span>
+          <div class="node-picker" id="child-picker">
+            <label class="picker-label">Child</label>
+            <div class="picker-display" id="child-display">—</div>
+          </div>
+          <button id="add-edge-btn" class="cta-btn cta-btn-sm" type="button" disabled>Add Edge</button>
+        </div>
+
+        <!-- Smart Toolbar -->
+        <div class="smart-toolbar">
+          <button id="swap-btn" class="tool-btn" type="button" title="Swap parent ↔ child">
+            <span class="tool-icon">⇄</span> Swap
+          </button>
+          <button id="chain-btn" class="tool-btn" type="button" title="Chain mode: after adding A→B, auto-set parent to B">
+            <span class="tool-icon">⛓</span> Chain
+            <span class="tool-badge" id="chain-badge" hidden>ON</span>
+          </button>
+          <button id="undo-btn" class="tool-btn" type="button" title="Remove last added edge" disabled>
+            <span class="tool-icon">↩</span> Undo
+          </button>
+          <button id="reset-slot-btn" class="tool-btn" type="button" title="Clear current parent/child selection">
+            <span class="tool-icon">✕</span> Reset
+          </button>
+        </div>
+
+        <!-- Used Nodes Quick Access -->
+        <div class="used-nodes-section" id="used-nodes-section" hidden>
+          <div class="used-nodes-label">Recent / In-use nodes</div>
+          <div class="used-nodes-row" id="used-nodes-row"></div>
+        </div>
+
+        <!-- Node buttons grid -->
+        <div class="node-grid-section">
+          <div class="node-grid-label">Letters</div>
+          <div class="node-grid" id="letter-grid"></div>
+          <div class="node-grid-label">Numbers</div>
+          <div class="node-grid" id="number-grid"></div>
+        </div>
+      </div>
+
+      <!-- ── Edge Chips ────────────────────────────────── -->
+      <div class="edge-chips-section">
+        <div class="edge-chips-header">
+          <span class="edge-chips-title">Edges <span class="edge-count" id="edge-count">0</span></span>
+          <div class="edge-chips-actions">
+            <button id="undo-chip-btn" class="ghost-btn ghost-btn-sm" type="button" hidden>↩ Undo Last</button>
+            <button id="clear-all-btn" class="ghost-btn ghost-btn-sm" type="button" hidden>Clear All</button>
+          </div>
+        </div>
+        <div class="edge-chips" id="edge-chips">
+          <div class="edge-chips-empty" id="edge-chips-empty">No edges added yet — pick a parent and child above</div>
+        </div>
+      </div>
+
+      <!-- ── Presets ───────────────────────────────────── -->
+      <div class="presets-row">
+        <span class="presets-label">Quick Start:</span>
+        <button class="preset-btn" data-preset="simple" type="button">Simple Tree</button>
+        <button class="preset-btn" data-preset="deep" type="button">Deep Chain</button>
+        <button class="preset-btn" data-preset="cycle" type="button">With Cycle</button>
+        <button class="preset-btn" data-preset="full" type="button">Full Example</button>
+      </div>
+
+      <!-- ── Raw textarea (collapsed) ──────────────────── -->
+      <details class="raw-input-drawer" id="raw-input-drawer">
+        <summary>Edit Raw Text</summary>
+        <textarea
+          id="data-input"
+          rows="3"
+          placeholder="A->B, A->C, B->D, C->E ..."
+          spellcheck="false"
+          autocomplete="off"
+        ></textarea>
+      </details>
+
+      <div class="input-footer">
+        <button id="example-btn" class="ghost-btn" type="button" hidden>Load Example</button>
+        <button id="submit-btn" class="cta-btn" type="button">
+          <span class="btn-text">Process</span>
+          <span class="btn-loader" hidden></span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ── Error Toast ────────────────────────────────────── -->
+    <div id="error-toast" class="toast" hidden>
+      <span id="error-msg"></span>
+      <button class="toast-close" id="toast-close-btn" type="button">×</button>
+    </div>
+
+    <!-- ── Results ────────────────────────────────────────── -->
+    <section id="results" class="results" hidden>
+
+      <!-- Summary Strip -->
+      <div class="summary-strip">
+        <div class="ss-item" id="stat-trees">
+          <span class="ss-num">0</span>
+          <span class="ss-label">Trees</span>
+        </div>
+        <div class="ss-item" id="stat-cycles">
+          <span class="ss-num">0</span>
+          <span class="ss-label">Cycles</span>
+        </div>
+        <div class="ss-item" id="stat-largest">
+          <span class="ss-num">—</span>
+          <span class="ss-label">Deepest Root</span>
+        </div>
+      </div>
+
+      <!-- Hierarchies -->
+      <h3 class="section-title">Hierarchies</h3>
+      <div id="hierarchies-container"></div>
+
+      <!-- Flags -->
+      <div id="badges-row" class="flags-area"></div>
+
+      <!-- Raw JSON -->
+      <details class="json-drawer" id="json-drawer">
+        <summary>View Raw JSON Response</summary>
+        <pre id="raw-json"></pre>
+      </details>
+    </section>
+
+    <!-- ── Feedback CTA ───────────────────────────────────── -->
+    <section class="feedback-section">
+      <p>Found an issue or have ideas?</p>
+      <a href="mailto:feedback@example.com" class="cta-btn cta-btn-dark">Give Feedback</a>
+    </section>
+
+  </main>
+
+  <!-- ── Footer ──────────────────────────────────────────── -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="footer-mark">SRM</span>
+        <span>Full Stack Engineering Challenge — 2026</span>
+      </div>
+      <div class="footer-links">
+        <a href="#">About</a>
+        <a href="#">Rules</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
