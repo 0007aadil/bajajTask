@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Docs — Nodetree API</title>
+  <meta name="description" content="API documentation for the Nodetree hierarchy processing endpoint." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="/" class="brand">
+        <div class="brand-mark">◈</div>
+        <span class="brand-text">nodetree</span>
+      </a>
+      <nav class="header-nav" id="header-nav">
+        <a href="/" class="nav-link">Tool</a>
+        <a href="/about.html" class="nav-link">How It Works</a>
+        <a href="/docs.html" class="nav-link nav-active">Docs</a>
+        <a href="/contact.html" class="nav-link">Contact</a>
+      </nav>
+      <button class="mobile-menu-btn" id="mobile-menu-btn" type="button" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main id="app">
+    <section class="page-hero">
+      <h1>API Docs</h1>
+      <p class="page-hero-sub">Integrate Nodetree into your workflow via a single POST endpoint.</p>
+    </section>
+
+    <section class="page-content">
+      <div class="content-card">
+        <h2>Endpoint</h2>
+        <p><code>POST /bfhl</code></p>
+        <p>Send an array of edge strings and receive a validated hierarchy response.</p>
+      </div>
+
+      <div class="content-card">
+        <h2>Request</h2>
+        <pre class="code-block">{
+  "data": ["A->B", "A->C", "B->D", "C->E"]
+}</pre>
+        <p style="margin-top:12px">Each item in <code>data</code> should be a string in <code>X->Y</code> format where X and Y are uppercase letters.</p>
+      </div>
+
+      <div class="content-card">
+        <h2>Response</h2>
+        <pre class="code-block">{
+  "hierarchies": [
+    {
+      "root": "A",
+      "depth": 2,
+      "has_cycle": false,
+      "tree": { "A": { "B": { "D": {} }, "C": { "E": {} } } }
+    }
+  ],
+  "invalid_entries": [],
+  "duplicate_edges": [],
+  "summary": {
+    "total_trees": 1,
+    "total_cycles": 0,
+    "largest_tree_root": "A"
+  }
+}</pre>
+      </div>
+
+      <div class="content-card">
+        <h2>Validation Rules</h2>
+        <div class="rules-list">
+          <div class="rule-item">
+            <div class="rule-num">1</div>
+            <div>
+              <strong>Format</strong>
+              <p>Only <code>[A-Z]->[A-Z]</code> edges are accepted. Self-loops rejected.</p>
+            </div>
+          </div>
+          <div class="rule-item">
+            <div class="rule-num">2</div>
+            <div>
+              <strong>Deduplication</strong>
+              <p>Duplicate edges are kept once; extras listed in <code>duplicate_edges</code>.</p>
+            </div>
+          </div>
+          <div class="rule-item">
+            <div class="rule-num">3</div>
+            <div>
+              <strong>Single Parent</strong>
+              <p>A node can have at most one parent. First-encountered parent wins.</p>
+            </div>
+          </div>
+          <div class="rule-item">
+            <div class="rule-num">4</div>
+            <div>
+              <strong>Cycles</strong>
+              <p>Detected via DFS colouring. Flagged with <code>has_cycle: true</code>.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <h2>Try it with cURL</h2>
+        <pre class="code-block">curl -X POST https://your-domain.com/bfhl \
+  -H "Content-Type: application/json" \
+  -d '{"data": ["A->B", "A->C", "B->D"]}'</pre>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="footer-mark">◈</span>
+        <span>nodetree — hierarchy visualization tool</span>
+      </div>
+      <div class="footer-links">
+        <a href="/about.html">How It Works</a>
+        <a href="/docs.html">Docs</a>
+        <a href="/contact.html">Contact</a>
+      </div>
+    </div>
+  </footer>
+  <script>document.getElementById("mobile-menu-btn").addEventListener("click",()=>{document.getElementById("header-nav").classList.toggle("nav-open");document.getElementById("mobile-menu-btn").classList.toggle("menu-open")});</script>
+</body>
+</html>

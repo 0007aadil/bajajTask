@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>How It Works — Nodetree</title>
+  <meta name="description" content="Learn how Nodetree processes node relationships into validated tree structures." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="/" class="brand">
+        <div class="brand-mark">◈</div>
+        <span class="brand-text">nodetree</span>
+      </a>
+      <nav class="header-nav" id="header-nav">
+        <a href="/" class="nav-link">Tool</a>
+        <a href="/about.html" class="nav-link nav-active">How It Works</a>
+        <a href="/docs.html" class="nav-link">Docs</a>
+        <a href="/contact.html" class="nav-link">Contact</a>
+      </nav>
+      <button class="mobile-menu-btn" id="mobile-menu-btn" type="button" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main id="app">
+    <section class="page-hero">
+      <h1>How It Works</h1>
+      <p class="page-hero-sub">From raw text to structured trees in three steps.</p>
+    </section>
+
+    <section class="page-content">
+      <div class="content-card">
+        <h2>1. Define Relationships</h2>
+        <p>Type or click to create edges like <code>A→B</code>. Each edge says "A is the parent of B." You can add as many as you want — we'll sort it out.</p>
+      </div>
+
+      <div class="content-card">
+        <h2>2. Automatic Validation</h2>
+        <p>When you hit <strong>Process</strong>, Nodetree runs your edges through a pipeline:</p>
+        <ul>
+          <li><strong>Format check</strong> — only <code>[A-Z]→[A-Z]</code> edges pass validation</li>
+          <li><strong>Deduplication</strong> — repeated edges are kept once, extras are flagged</li>
+          <li><strong>Single parent rule</strong> — each node can only have one parent</li>
+          <li><strong>Cycle detection</strong> — circular references are identified using DFS</li>
+        </ul>
+      </div>
+
+      <div class="content-card">
+        <h2>3. Visualize Results</h2>
+        <p>Valid edges produce an interactive tree view. You'll see depth, node counts, root identification, and any issues — all at a glance. Export as JSON or share the link.</p>
+      </div>
+
+      <div class="content-card">
+        <h2>Use Cases</h2>
+        <div class="tech-grid">
+          <div class="tech-item">
+            <strong>Education</strong>
+            <span>Teach graph theory and tree structures visually</span>
+          </div>
+          <div class="tech-item">
+            <strong>Data Modeling</strong>
+            <span>Quick-prototype hierarchies before coding</span>
+          </div>
+          <div class="tech-item">
+            <strong>Debugging</strong>
+            <span>Paste dependency chains and spot cycles</span>
+          </div>
+          <div class="tech-item">
+            <strong>Documentation</strong>
+            <span>Generate tree JSON for technical docs</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="footer-mark">◈</span>
+        <span>nodetree — hierarchy visualization tool</span>
+      </div>
+      <div class="footer-links">
+        <a href="/about.html">How It Works</a>
+        <a href="/docs.html">Docs</a>
+        <a href="/contact.html">Contact</a>
+      </div>
+    </div>
+  </footer>
+  <script>document.getElementById("mobile-menu-btn").addEventListener("click",()=>{document.getElementById("header-nav").classList.toggle("nav-open");document.getElementById("mobile-menu-btn").classList.toggle("menu-open")});</script>
+</body>
+</html>

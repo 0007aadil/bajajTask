@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
+const nodemailer = require("nodemailer");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -11,7 +12,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
 // ── Identity (REPLACE with your real details before deploying) ──
-const USER_ID = "aadil05012005";
+const USER_ID = "aadil_05012005";
 const EMAIL_ID = "aa5356@srmist.edu.in";
 const COLLEGE_ROLL = "RA2311029010009";
 
@@ -36,6 +37,78 @@ app.post("/bfhl", (req, res) => {
     console.error(err);
     return res.status(500).json({ error: "Internal server error." });
   }
+});
+
+// ── POST /feedback ───────────────────────────────────────────
+const feedbackStore = [];
+
+// Gmail transporter — set GMAIL_APP_PASSWORD env var to enable email
+const FEEDBACK_EMAIL = "aadilahsan007@gmail.com";
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: FEEDBACK_EMAIL,
+    pass: process.env.GMAIL_APP_PASSWORD || "",
+  },
+});
+
+app.post("/feedback", async (req, res) => {
+  try {
+    const { name, email, type, message } = req.body;
+
+    if (!name || !email || !message) {
+      return res.status(400).json({ error: "Name, email, and message are required." });
+    }
+
+    const feedback = {
+      id: feedbackStore.length + 1,
+      name,
+      email,
+      type: type || "general",
+      message,
+      timestamp: new Date().toISOString(),
+    };
+
+    feedbackStore.push(feedback);
+    console.log(`📬 New feedback from ${name} (${email}): [${type}] ${message}`);
+
+    // Send email if app password is configured
+    if (process.env.GMAIL_APP_PASSWORD) {
+      try {
+        await transporter.sendMail({
+          from: `"Nodetree Feedback" <${FEEDBACK_EMAIL}>`,
+          to: FEEDBACK_EMAIL,
+          replyTo: email,
+          subject: `[Nodetree] ${type} feedback from ${name}`,
+          text: `Name: ${name}\nEmail: ${email}\nType: ${type}\nTime: ${feedback.timestamp}\n\n${message}`,
+          html: `
+            <div style="font-family:sans-serif;max-width:500px">
+              <h2 style="margin:0 0 16px">New Feedback</h2>
+              <table style="border-collapse:collapse;width:100%">
+                <tr><td style="padding:6px 12px;color:#888;width:80px">From</td><td style="padding:6px 12px"><strong>${name}</strong></td></tr>
+                <tr><td style="padding:6px 12px;color:#888">Email</td><td style="padding:6px 12px"><a href="mailto:${email}">${email}</a></td></tr>
+                <tr><td style="padding:6px 12px;color:#888">Type</td><td style="padding:6px 12px">${type}</td></tr>
+              </table>
+              <div style="margin:16px 0;padding:16px;background:#f5f5f5;border-radius:8px;white-space:pre-wrap">${message}</div>
+            </div>
+          `,
+        });
+        console.log(`✉️  Email sent to ${FEEDBACK_EMAIL}`);
+      } catch (mailErr) {
+        console.error("Email failed:", mailErr.message);
+      }
+    }
+
+    return res.json({ success: true, message: "Feedback received!" });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Failed to process feedback." });
+  }
+});
+
+// GET feedback (for admin review)
+app.get("/feedback", (req, res) => {
+  res.json({ total: feedbackStore.length, feedback: feedbackStore });
 });
 
 // ── Processing Logic ─────────────────────────────────────────
@@ -266,11 +339,20 @@ function computeDepth(tree) {
   return helper(tree);
 }
 
-// ── Start (local dev only — Vercel uses the export) ─────────
-if (process.env.NODE_ENV !== "production") {
-  app.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
-  });
-}
+// ── Start ────────────────────────────────────────────────────
+const server = app.listen(PORT, () => {
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
+});
+
+server.on("error", (err) => {
+  if (err.code === "EADDRINUSE") {
+    console.log(`⚠️  Port ${PORT} is busy, trying ${+PORT + 1}...`);
+    app.listen(+PORT + 1, () => {
+      console.log(`🚀 Server running on http://localhost:${+PORT + 1}`);
+    });
+  } else {
+    console.error(err);
+  }
+});
 
 module.exports = app;

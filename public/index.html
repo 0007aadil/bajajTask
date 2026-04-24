@@ -3,41 +3,53 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BFHL — Hierarchy Processor | SRM</title>
-  <meta name="description" content="SRM Full Stack Engineering Challenge — Process hierarchical node relationships and visualize tree structures." />
+  <title>Nodetree — Visualize Hierarchies Instantly</title>
+  <meta name="description" content="Build, visualize, and validate tree structures from simple node relationships. Free, fast, no sign-up required." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+    }
+  }
+  </script>
 </head>
 <body>
 
-  <!-- ── Header ──────────────────────────────────────────── -->
   <header class="site-header">
     <div class="header-inner">
-      <div class="brand">
-        <div class="brand-mark">SRM</div>
-        <span class="brand-divider"></span>
-        <span class="brand-text">BFHL Challenge</span>
-      </div>
-      <nav class="header-nav">
-        <span class="nav-endpoint">POST /bfhl</span>
-        <a href="https://github.com" target="_blank" rel="noopener" class="nav-link">GitHub ↗</a>
+      <a href="/" class="brand">
+        <div class="brand-mark">◈</div>
+        <span class="brand-text">nodetree</span>
+      </a>
+      <nav class="header-nav" id="header-nav">
+        <a href="/" class="nav-link nav-active">Tool</a>
+        <a href="/about.html" class="nav-link">How It Works</a>
+        <a href="/docs.html" class="nav-link">Docs</a>
+        <a href="/contact.html" class="nav-link">Contact</a>
       </nav>
+      <button class="mobile-menu-btn" id="mobile-menu-btn" type="button" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
     </div>
   </header>
 
   <main id="app">
 
-    <!-- ── Hero ────────────────────────────────────────────── -->
+    <!-- ── Hero ──────────────────────────────────────────── -->
     <section class="hero-section">
       <div class="hero-content">
-        <h1>Hierarchy<br/>Processor</h1>
+        <p class="hero-eyebrow">Free tool — no sign-up needed</p>
+        <h1>Turn relationships<br/>into trees.</h1>
         <p class="hero-desc">
-          Enter node relationships like <code>A→B</code> and instantly
-          visualize the resulting trees, detect cycles, and explore structured insights.
+          Define parent→child connections and instantly see the full hierarchy.
+          Cycles detected. Duplicates flagged. Results in milliseconds.
         </p>
-        <a href="#input-section" class="cta-btn" id="start-btn">Start Now</a>
+        <a href="#input-section" class="cta-btn" id="start-btn">Start Building</a>
       </div>
       <div class="hero-graphic" aria-hidden="true">
         <div class="hero-tree">
@@ -59,6 +71,7 @@
         </div>
       </div>
     </section>
+
 
     <!-- ── Input Card ─────────────────────────────────────── -->
     <section class="card input-card" id="input-section">
@@ -145,7 +158,7 @@
 
       <!-- ── Presets ───────────────────────────────────── -->
       <div class="presets-row">
-        <span class="presets-label">Quick Start:</span>
+        <span class="presets-label">Try an example:</span>
         <button class="preset-btn" data-preset="simple" type="button">Simple Tree</button>
         <button class="preset-btn" data-preset="deep" type="button">Deep Chain</button>
         <button class="preset-btn" data-preset="cycle" type="button">With Cycle</button>
@@ -184,17 +197,14 @@
 
     <!-- ── Results ────────────────────────────────────────── -->
     <section id="results" class="results" hidden>
-
-      <!-- Results Toolbar -->
       <div class="results-toolbar">
         <h3 class="results-toolbar-title">Results</h3>
         <div class="results-actions">
-          <button id="copy-json-btn" class="ghost-btn ghost-btn-sm" type="button" title="Copy JSON to clipboard">📋 Copy JSON</button>
+          <button id="copy-json-btn" class="ghost-btn ghost-btn-sm" type="button" title="Copy JSON to clipboard">📋 Copy</button>
           <button id="download-json-btn" class="ghost-btn ghost-btn-sm" type="button" title="Download JSON file">⬇ Download</button>
         </div>
       </div>
 
-      <!-- Summary Strip -->
       <div class="summary-strip">
         <div class="ss-item" id="stat-trees">
           <span class="ss-num">0</span>
@@ -218,43 +228,94 @@
         </div>
       </div>
 
-      <!-- Hierarchies -->
+      <!-- 3D Visualization -->
+      <div class="viz3d-section" id="viz3d-section" hidden>
+        <div class="viz3d-header">
+          <h3 class="viz3d-title">3D Graph View</h3>
+          <div class="viz3d-controls">
+            <button class="ghost-btn ghost-btn-sm" id="viz3d-reset" type="button">Reset Camera</button>
+            <button class="ghost-btn ghost-btn-sm" id="viz3d-toggle" type="button">Hide 3D</button>
+          </div>
+        </div>
+        <div class="viz3d-canvas-wrap" id="viz3d-canvas-wrap"></div>
+        <p class="viz3d-hint">Drag to rotate · Scroll to zoom · Right-drag to pan</p>
+      </div>
+
       <h3 class="section-title">Hierarchies</h3>
       <div id="hierarchies-container"></div>
-
-      <!-- Flags -->
       <div id="badges-row" class="flags-area"></div>
 
-      <!-- Raw JSON -->
       <details class="json-drawer" id="json-drawer">
         <summary>View Raw JSON Response</summary>
         <pre id="raw-json"></pre>
       </details>
     </section>
 
-    <!-- ── Feedback CTA ───────────────────────────────────── -->
-    <section class="feedback-section">
-      <p>Found an issue or have ideas?</p>
-      <a href="mailto:feedback@example.com" class="cta-btn cta-btn-dark">Give Feedback</a>
+    <!-- ── Feedback Form ──────────────────────────────────── -->
+    <section class="feedback-section" id="feedback-section">
+      <div class="feedback-inner">
+        <div class="feedback-header">
+          <h2>Feedback</h2>
+          <p class="feedback-desc">Found something off, or have an idea? We read every message.</p>
+        </div>
+        <form id="feedback-form" class="feedback-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="fb-name">Name</label>
+              <input type="text" id="fb-name" placeholder="Your name" required />
+            </div>
+            <div class="form-group">
+              <label for="fb-email">Email</label>
+              <input type="email" id="fb-email" placeholder="you@email.com" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="fb-type">Type</label>
+            <select id="fb-type">
+              <option value="bug">Bug Report</option>
+              <option value="feature">Feature Request</option>
+              <option value="general" selected>General</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="fb-message">Message</label>
+            <textarea id="fb-message" rows="4" placeholder="What's on your mind?" required></textarea>
+          </div>
+          <div class="feedback-footer">
+            <span class="feedback-note">Sent directly — no account needed.</span>
+            <button type="submit" class="cta-btn" id="fb-submit-btn">
+              <span class="btn-text">Send</span>
+              <span class="btn-loader" hidden></span>
+            </button>
+          </div>
+        </form>
+        <div id="feedback-success" class="feedback-success" hidden>
+          <div class="feedback-success-icon">✓</div>
+          <h3>Thanks!</h3>
+          <p>We've received your message and will follow up if needed.</p>
+          <button type="button" class="ghost-btn" id="fb-another-btn">Send Another</button>
+        </div>
+      </div>
     </section>
 
   </main>
 
-  <!-- ── Footer ──────────────────────────────────────────── -->
   <footer class="site-footer">
     <div class="footer-inner">
       <div class="footer-brand">
-        <span class="footer-mark">SRM</span>
-        <span>Full Stack Engineering Challenge — 2026</span>
+        <span class="footer-mark">◈</span>
+        <span>nodetree — hierarchy visualization tool</span>
       </div>
       <div class="footer-links">
-        <a href="#">About</a>
-        <a href="#">Rules</a>
-        <a href="#">Contact</a>
+        <a href="/about.html">How It Works</a>
+        <a href="/docs.html">Docs</a>
+        <a href="/contact.html">Contact</a>
+        <a href="#feedback-section">Feedback</a>
       </div>
     </div>
   </footer>
 
   <script src="script.js"></script>
+  <script type="module" src="viz3d.js"></script>
 </body>
 </html>

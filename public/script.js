@@ -500,7 +500,8 @@
 
   // ── Keyboard shortcuts ──────────────────────────────────
   document.addEventListener("keydown", (e) => {
-    if (document.activeElement === input) return;
+    const tag = document.activeElement?.tagName;
+    if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
     const key = e.key.toUpperCase();
     if (/^[A-Z0-9]$/.test(key) && !e.metaKey && !e.ctrlKey && !e.altKey) {
       e.preventDefault();
@@ -558,6 +559,12 @@
       const json = await res.json();
       lastApiResponse = json;
       renderResults(json);
+
+      // Trigger 3D visualization
+      if (window.render3DGraph) {
+        json._edges = data; // pass original edges for cycle reconstruction
+        window.render3DGraph(json);
+      }
     } catch (err) {
       showError(err.message || "Couldn't reach the API.");
     } finally {
@@ -715,4 +722,79 @@
   highlightActiveSlot();
   updateShareBtn();
   loadFromURL();
+
+  // ── Feedback Form ───────────────────────────────────────
+  const feedbackForm    = document.getElementById("feedback-form");
+  const feedbackSuccess = document.getElementById("feedback-success");
+  const fbAnotherBtn    = document.getElementById("fb-another-btn");
+
+  if (feedbackForm) {
+    feedbackForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const fbBtn = document.getElementById("fb-submit-btn");
+      const fbBtnText = fbBtn.querySelector(".btn-text");
+      const fbBtnLoader = fbBtn.querySelector(".btn-loader");
+
+      fbBtn.disabled = true;
+      fbBtnText.hidden = true;
+      fbBtnLoader.hidden = false;
+
+      const name = document.getElementById("fb-name").value.trim();
+      const email = document.getElementById("fb-email").value.trim();
+      const type = document.getElementById("fb-type").value;
+      const message = document.getElementById("fb-message").value.trim();
+
+      try {
+        // Send email via Formsubmit.co (free, no signup needed)
+        const formData = new FormData();
+        formData.append("name", name);
+        formData.append("email", email);
+        formData.append("_subject", `[Nodetree] ${type} feedback from ${name}`);
+        formData.append("message", `Type: ${type}\n\n${message}`);
+        formData.append("_captcha", "false");
+        formData.append("_template", "table");
+
+        await fetch("https://formsubmit.co/ajax/aadilahsan007@gmail.com", {
+          method: "POST",
+          headers: { "Accept": "application/json" },
+          body: formData,
+        });
+
+        // Also save locally
+        fetch("/feedback", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, type, message }),
+        }).catch(() => {});
+
+        feedbackForm.hidden = true;
+        feedbackSuccess.hidden = false;
+      } catch (err) {
+        showError("Failed to send feedback. Please try again.");
+      } finally {
+        fbBtn.disabled = false;
+        fbBtnText.hidden = false;
+        fbBtnLoader.hidden = true;
+      }
+    });
+  }
+
+  if (fbAnotherBtn) {
+    fbAnotherBtn.addEventListener("click", () => {
+      feedbackForm.reset();
+      feedbackForm.hidden = false;
+      feedbackSuccess.hidden = true;
+    });
+  }
+
+  // ── Mobile Menu ─────────────────────────────────────────
+  const mobileMenuBtn = document.getElementById("mobile-menu-btn");
+  const headerNav = document.getElementById("header-nav");
+  if (mobileMenuBtn && headerNav) {
+    mobileMenuBtn.addEventListener("click", () => {
+      headerNav.classList.toggle("nav-open");
+      mobileMenuBtn.classList.toggle("menu-open");
+    });
+  }
 })();

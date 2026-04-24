@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact — Nodetree</title>
+  <meta name="description" content="Get in touch with the Nodetree team." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body { display: flex; flex-direction: column; min-height: 100vh; }
+    #app { flex: 1; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="/" class="brand">
+        <div class="brand-mark">◈</div>
+        <span class="brand-text">nodetree</span>
+      </a>
+      <nav class="header-nav" id="header-nav">
+        <a href="/" class="nav-link">Tool</a>
+        <a href="/about.html" class="nav-link">How It Works</a>
+        <a href="/docs.html" class="nav-link">Docs</a>
+        <a href="/contact.html" class="nav-link nav-active">Contact</a>
+      </nav>
+      <button class="mobile-menu-btn" id="mobile-menu-btn" type="button" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main id="app">
+    <section class="page-hero">
+      <h1>Get in Touch</h1>
+      <p class="page-hero-sub">Have a question or want to report an issue? Here's how to reach us.</p>
+    </section>
+
+    <section class="page-content">
+      <div class="contact-simple">
+        <div class="contact-row">
+          <span class="contact-label">Email</span>
+          <a href="mailto:aadilahsan007@gmail.com" class="contact-value contact-link">aadilahsan007@gmail.com</a>
+        </div>
+        <div class="contact-row">
+          <span class="contact-label">Feedback</span>
+          <a href="/#feedback-section" class="contact-value contact-link">Use the feedback form on the home page →</a>
+        </div>
+        <div class="contact-row">
+          <span class="contact-label">API Docs</span>
+          <a href="/docs.html" class="contact-value contact-link">Read the documentation →</a>
+        </div>
+        <div class="contact-row">
+          <span class="contact-label">Response Time</span>
+          <span class="contact-value">Usually within 24 hours</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="footer-mark">◈</span>
+        <span>nodetree — hierarchy visualization tool</span>
+      </div>
+      <div class="footer-links">
+        <a href="/about.html">How It Works</a>
+        <a href="/docs.html">Docs</a>
+        <a href="/contact.html">Contact</a>
+      </div>
+    </div>
+  </footer>
+  <script>document.getElementById("mobile-menu-btn").addEventListener("click",()=>{document.getElementById("header-nav").classList.toggle("nav-open");document.getElementById("mobile-menu-btn").classList.toggle("menu-open")});</script>
+</body>
+</html>

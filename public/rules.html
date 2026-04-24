@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rules — BFHL Challenge | SRM</title>
+  <meta name="description" content="Rules and specifications for the BFHL Hierarchy Processor challenge." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="/" class="brand">
+        <div class="brand-mark">SRM</div>
+        <span class="brand-divider"></span>
+        <span class="brand-text">BFHL Challenge</span>
+      </a>
+      <nav class="header-nav" id="header-nav">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/about.html" class="nav-link">About</a>
+        <a href="/rules.html" class="nav-link nav-active">Rules</a>
+        <a href="/contact.html" class="nav-link">Contact</a>
+        <span class="nav-endpoint">POST /bfhl</span>
+      </nav>
+      <button class="mobile-menu-btn" id="mobile-menu-btn" type="button" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main id="app">
+    <section class="page-hero">
+      <h1>Rules</h1>
+      <p class="page-hero-sub">How the hierarchy processor works</p>
+    </section>
+
+    <section class="page-content">
+      <div class="content-card">
+        <h2>Input Format</h2>
+        <ul>
+          <li>Edges must be in the format <code>X→Y</code> where X and Y are <strong>single uppercase letters</strong> (A–Z)</li>
+          <li>Multiple edges are separated by commas: <code>A→B, A→C, B→D</code></li>
+          <li>Numeric nodes (1–9) are also supported in the builder but classified as <strong>invalid</strong> by the API spec</li>
+        </ul>
+      </div>
+
+      <div class="content-card">
+        <h2>Processing Rules</h2>
+        <div class="rules-list">
+          <div class="rule-item">
+            <div class="rule-num">1</div>
+            <div>
+              <strong>Validation</strong>
+              <p>Only edges matching <code>[A-Z]->[A-Z]</code> are accepted. Self-loops like <code>A→A</code> are rejected. Everything else goes to "Invalid Entries."</p>
+            </div>
+          </div>
+          <div class="rule-item">
+            <div class="rule-num">2</div>
+            <div>
+              <strong>Deduplication</strong>
+              <p>If the same edge appears multiple times (e.g., <code>G→H, G→H</code>), only the first is kept. Duplicates are listed separately.</p>
+            </div>
+          </div>
+          <div class="rule-item">
+            <div class="rule-num">3</div>
+            <div>
+              <strong>Single Parent Rule</strong>
+              <p>Each node can have at most <strong>one parent</strong>. If a node appears as a child in multiple edges, only the first-encountered parent wins.</p>
+            </div>
+          </div>
+          <div class="rule-item">
+            <div class="rule-num">4</div>
+            <div>
+              <strong>Connected Components</strong>
+              <p>Nodes are grouped into connected components using BFS. Each component is processed independently.</p>
+            </div>
+          </div>
+          <div class="rule-item">
+            <div class="rule-num">5</div>
+            <div>
+              <strong>Cycle Detection</strong>
+              <p>Each component is checked for cycles using DFS with grey/black colouring. Components with cycles show "↻ cycle" instead of a tree.</p>
+            </div>
+          </div>
+          <div class="rule-item">
+            <div class="rule-num">6</div>
+            <div>
+              <strong>Tree Building</strong>
+              <p>Acyclic components are rendered as nested tree structures. The root is the node with no incoming edges.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <h2>API Specification</h2>
+        <p><strong>Endpoint:</strong> <code>POST /bfhl</code></p>
+        <p><strong>Request Body:</strong></p>
+        <pre class="code-block">{
+  "data": ["A->B", "A->C", "B->D", "C->E"]
+}</pre>
+        <p><strong>Response:</strong> Returns hierarchies, invalid entries, duplicate edges, and a summary with tree/cycle counts.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="footer-mark">SRM</span>
+        <span>Full Stack Engineering Challenge — 2026</span>
+      </div>
+      <div class="footer-links">
+        <a href="/about.html">About</a>
+        <a href="/rules.html">Rules</a>
+        <a href="/contact.html">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById("mobile-menu-btn").addEventListener("click", () => {
+      document.getElementById("header-nav").classList.toggle("nav-open");
+    });
+  </script>
+</body>
+</html>
